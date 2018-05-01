@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,target-densitydpi=high-dpi,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title><%=title%></title>
+    <% include css.ejs %>
+    <% include js.ejs %>
+    <style>
+        .fieldlist {
+            margin: 0 0 -2em;
+            padding: 0;
+        }
+
+        .fieldlist li {
+            list-style: none;
+            padding-bottom: 2em;
+        }
+
+        .fieldlist label {
+            display: block;
+            padding-bottom: 1em;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+<div id="example">
+    <div class="demo-section k-content">
+        <form action="home" method="get">
+            <ul class="fieldlist">
+                <li style="text-align: center"><h2>Ihuokong活控</h2></li>
+                <li>
+                    <input id="username-input" type="text" class="k-textbox" name="username" style="width: 100%;" placeholder="用户名">
+                </li>
+                <li>
+                    <input id="password-input" type="password" class="k-textbox" name="password" style="width: 100%;" placeholder="密码">
+                </li>
+                <li>
+                    <button type="submit" class="k-button k-primary" style="width: 100%;">登&nbsp;&nbsp;录</button>
+                </li>
+                <li style="text-align: center;color: red;"><%=errormsg%></li>
+            </ul>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,target-densitydpi=high-dpi,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title><%=title%></title>
+    <% include css.ejs %>
+    <% include js.ejs %>
+    <style>
+        body{
+            overflow: hidden;
+        }
+        .k-panelbar .k-tabstrip>.k-content, .k-tabstrip>.k-content{
+            padding: 0;
+        }
+        .box-top{
+            color: #fff;
+            margin: 0;
+            line-height: 3.6em;
+            padding: 0 1em;
+            background-image: none;
+            background-image: none,-webkit-gradient(linear,left top,left bottom,from(#303553),to(#072138));
+            background-image: none,-webkit-linear-gradient(top,#303553 0,#072138 100%);
+            background-image: none,linear-gradient(to bottom,#303553 0,#072138 100%);
+        }
+    </style>
+</head>
+<body>
+<div class="box wide box-top">
+    <h2 style="float: left">Ihuokong活控</h2>
+    <p style="float: right;font-weight: bold;">
+        <%=user.username%>
+        <span style="margin: 0 20px"><a href="/">退出</a></span>
+    </p>
+</div>
+<div id="tabstrip">
+    <ul class="k-rtl">
+        <li>
+            <h3>用户列表</h3>
+        </li>
+        <!--<li>
+            <h3>视频列表</h3>
+        </li>-->
+        <li class="k-state-active">
+            <h3>拍摄信息</h3>
+        </li>
+    </ul>
+    <div>
+        <div id="userGrid"></div>
+    </div>
+    <!--<div>
+        <div id="vedioGrid"></div>
+    </div>-->
+    <div>
+        <div id="contactGrid"></div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $("#tabstrip").kendoTabStrip({
+            animation:  {
+                open: {
+                    effects: "fadeIn"
+                }
+            }
+        });
+        var crudServiceBaseUrl = "<%=baseUrl%>",
+                userDataSource = new kendo.data.DataSource({
+                    transport: {
+                        read:  {
+                            url: crudServiceBaseUrl + "/userQuery",
+                            dataType: "jsonp"
+                        },
+                        update: {
+                            url: crudServiceBaseUrl + "/userUpdate",
+                            dataType: "jsonp"
+                        },
+                        destroy: {
+                            url: crudServiceBaseUrl + "/userDestroy",
+                            dataType: "jsonp"
+                        },
+                        create: {
+                            url: crudServiceBaseUrl + "/userCreate",
+                            dataType: "jsonp"
+                        }
+                    },
+                    batch: true,
+                    //pageSize: 20,
+                    schema: {
+                        model: {
+                            id: "id",
+                            fields: {
+                                id: { editable: false, nullable: true },
+                                username: { validation: { required: true } },
+                                password: { validation: { required: true } }
+                            }
+                        }
+                    }
+                }),
+                contactDataSource = new kendo.data.DataSource({
+                    transport: {
+                        read:  {
+                            url: crudServiceBaseUrl + "/contactQuery",
+                            dataType: "jsonp"
+                        },
+                        update: {
+                            url: crudServiceBaseUrl + "/contactUpdate",
+                            dataType: "jsonp"
+                        },
+                        destroy: {
+                            url: crudServiceBaseUrl + "/contactDestroy",
+                            dataType: "jsonp"
+                        },
+                        create: {
+                            url: crudServiceBaseUrl + "/contactCreate",
+                            dataType: "jsonp"
+                        }
+                    },
+                    batch: true,
+                    //pageSize: 20,
+                    schema: {
+                        model: {
+                            id: "id",
+                            fields: {
+                                id: { editable: false, nullable: true },
+                                name: { validation: { required: true } },
+                                email: { validation: { required: true } },
+                                requires: { validation: { required: true } },
+                                phone: { validation: { required: true } },
+                                complete: {type: "boolean"},
+                                time: {type: "date"}
+                            }
+                        }
+                    }
+                })/*,
+                vedioDataSource = new kendo.data.DataSource({
+                    transport: {
+                        read:  {
+                            url: crudServiceBaseUrl + "/vedioQuery",
+                            dataType: "jsonp"
+                        },
+                        update: {
+                            url: crudServiceBaseUrl + "/vedioUpdate",
+                            dataType: "jsonp"
+                        },
+                        destroy: {
+                            url: crudServiceBaseUrl + "/vedioDestroy",
+                            dataType: "jsonp"
+                        },
+                        create: {
+                            url: crudServiceBaseUrl + "/vedioCreate",
+                            dataType: "jsonp"
+                        }
+                    },
+                    batch: true,
+                    //pageSize: 20,
+                    schema: {
+                        model: {
+                            id: "id",
+                            fields: {
+                                id: { editable: false, nullable: true },
+                                title: { validation: { required: true } },
+                                imgsrc: { validation: { required: true } },
+                                vediosrc: { validation: { required: true } }
+                            }
+                        }
+                    }
+                })*/;
+        var winheight = $(window).height() - $("#tabstrip > ul").height() - $(".box-top").height() - 6;
+
+        $("#userGrid").kendoGrid({
+            dataSource: userDataSource,
+            excelExport:  function(e) {
+                e.workbook.fileName = "用户列表.xlsx";
+            },
+            height: winheight,
+            toolbar: ["create", "excel"],
+            columns: [
+                { field: "username", title: "用户名"},
+                { field: "password", title:"密码"},
+                { command: ["edit", "destroy"], title: "&nbsp;"}],
+            editable: "inline",
+            messages: {
+                commands: {
+                    cancel: "取消修改",
+                    canceledit: "取消",
+                    create: "新增管理员",
+                    destroy: "删除",
+                    edit: "修改",
+                    save: "保存修改",
+                    select: "选择",
+                    update: "更新",
+                    excel: "导出到EXCEL"
+                }
+            }
+        });
+        $("#contactGrid").kendoGrid({
+            dataSource: contactDataSource,
+            height: winheight,
+            toolbar: ["create", "excel"],
+            excelExport:  function(e) {
+                e.workbook.fileName = "拍摄信息.xlsx";
+            },
+            columns: [
+                { field: "name", title: "姓名或公司名称"},
+                { field: "email", title: "邮箱"},
+                { field: "requires", title: "拍摄需求"},
+                { field: "phone", title: "电话"},
+                { field: "complete", title: "是否完成"},
+                { field: "time", title: "时间", format: "{0: yyyy-MM-dd}"},
+                { command: ["edit", "destroy"], title: "&nbsp;"}],
+            editable: "inline",
+            messages: {
+                commands: {
+                    cancel: "取消修改",
+                    canceledit: "取消",
+                    create: "新增拍摄信息",
+                    destroy: "删除",
+                    edit: "修改",
+                    save: "保存修改",
+                    select: "选择",
+                    update: "更新",
+                    excel: "导出到EXCEL"
+                }
+            }
+        });
+        /*$("#vedioGrid").kendoGrid({
+            dataSource: vedioDataSource,
+            excelExport:  function(e) {
+                e.workbook.fileName = "用户列表.xlsx";
+            },
+            height: winheight,
+            toolbar: ["create", "excel", "（请编辑10个视频信息）"],
+            columns: [
+                { field: "title", title: "标题"},
+                { field: "imgsrc", title:"图片链接"},
+                { field: "vediosrc", title:"视频链接"},
+                { command: ["edit", "destroy"], title: "&nbsp;"}],
+            editable: "inline",
+            messages: {
+                commands: {
+                    cancel: "取消修改",
+                    canceledit: "取消",
+                    create: "新增视频",
+                    destroy: "删除",
+                    edit: "修改",
+                    save: "保存修改",
+                    select: "选择",
+                    update: "更新",
+                    excel: "导出到EXCEL"
+                }
+            }
+        });*/
+    });
+</script>
+</body>
+</html>
